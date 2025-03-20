@@ -5,6 +5,7 @@ import datetime
 import os
 import pathlib
 import configparser
+import shutil
 
 # Get the script's directory
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -24,6 +25,22 @@ config = read_config()
 # Define input and output directories from config
 INPUT_DIR = config['Directories']['count_output_dir']
 OUTPUT_DIR = config['Directories']['estimate_output_dir']
+
+def clean_estimate_directory():
+    """Delete all files in the estimate directory"""
+    if os.path.exists(OUTPUT_DIR):
+        for filename in os.listdir(OUTPUT_DIR):
+            file_path = os.path.join(OUTPUT_DIR, filename)
+            try:
+                if os.path.isfile(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print(f'Error deleting {file_path}: {e}')
+        print(f"Cleaned directory: {OUTPUT_DIR}")
+    else:
+        print(f"Directory does not exist: {OUTPUT_DIR}")
 
 def read_sql_file(filepath):
     with open(filepath, 'r') as file:
@@ -167,16 +184,17 @@ def process_sql_file(connection, sql_file_path):
 
 def connect_and_query():
     try:
-        # MySQL connection details
+        # Clean estimate directory first
+        clean_estimate_directory()
+        
+        # MySQL connection details from config
         connection = mysql.connector.connect(
-            host="127.0.0.1",  # Using IP instead of localhost
-            port=3306,
-            user="exchange",
-            password="abcd1234",
-            database="user_profile",
-            allow_local_infile=True,
-            use_pure=True,  # Use pure Python implementation
-            connection_timeout=10  # Add timeout
+            host=config['MySQL']['host'],
+            port=int(config['MySQL']['port']),
+            user=config['MySQL']['user'],
+            password=config['MySQL']['password'],
+            database=config['MySQL']['database'],
+            allow_local_infile=config['MySQL'].getboolean('allow_local_infile'),
         )
 
         if connection.is_connected():
