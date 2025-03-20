@@ -18,6 +18,7 @@ The script `/script/run_count.py` will execute the following steps:
    - This will execute all the SQL files under `/delete` folder.
    
 ## Flow Chart
+### run_count.py
 ```mermaid
 flowchart TD
     A[Start] --> B[Clean up directories]
@@ -39,4 +40,18 @@ flowchart TD
     
     V --> |Yes|O
     V --> |No|G[Done]
+```
 
+### execute.py
+```mermaid
+flowchart TD
+    A[Start] --> D[Establish DB Connection]
+    D --> G[Get SQL Files from delete directory]
+    
+    G --> L[Read SQL File]
+    L --> P[Execute Each Command]
+    
+    P --> F{Has next file?}
+    F --> |Yes|G
+    F --> |No|GG[Done]
+```
