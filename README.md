@@ -19,26 +19,24 @@ The script `/script/run_count.py` will execute the following steps:
    
 ## Flow Chart
 ```mermaid
-graph TD
-    A[Start] --> E[Use Selenium Login Notion]
-    E --> F[Read URLs from File]
+flowchart TD
+    A[Start] --> B[Clean up directories]
+    B --> E[Use Selenium Login to Notion with Google]
+    E --> F[Read services URLs from config file]
+    F --> O[Access Notion page]
     
-    F --> J[Access Notion Page]
+    O --> Q[Collect TW count SQL]
+    O --> R[Collect KY count SQL]
+    O --> S[Collect TW clean SQL]
+    O --> T[Collect KY clean SQL]
     
-    J --> N{Has #count_tw_start?}
-    N -->|Yes| O[Save TW Content to File]
-    N -->|No| P{Has #count_ky_start?}
-    O --> P
+    Q --> Z
+    R --> Z
+    S --> Z
+    T --> Z[Persist as SQL file]
     
-    P -->|Yes| Q[Save KY Content to File]
-    P -->|No| R[Process Next URL]
-    Q --> R
+    Z --> V{Has next URLs?}
     
-    R --> S{More URLs?}
-    S -->|Yes| J
-    S -->|No| U[End]
+    V --> |Yes|O
+    V --> |No|G[Done]
 
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style U fill:#f9f,stroke:#333,stroke-width:2px
-    style O fill:#6f6,stroke:#333,stroke-width:2px
-    style Q fill:#6f6,stroke:#333,stroke-width:2px
