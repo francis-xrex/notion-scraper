@@ -4,15 +4,26 @@ import csv
 import datetime
 import os
 import pathlib
+import configparser
 
 # Get the script's directory
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 # Get the counts directory (parent of script directory)
 COUNTS_DIR = os.path.dirname(SCRIPT_DIR)
 
-# Define input and output directories
-INPUT_DIR = "/Users/francischen/workspace/test/count_result/count"
-OUTPUT_DIR = "/Users/francischen/workspace/test/count_result/estimate"
+def read_config():
+    """Read configuration from properties file"""
+    config = configparser.ConfigParser()
+    config_path = os.path.join(COUNTS_DIR, 'properties', 'config.properties')
+    config.read(config_path)
+    return config
+
+# Read configuration
+config = read_config()
+
+# Define input and output directories from config
+INPUT_DIR = config['Directories']['count_output_dir']
+OUTPUT_DIR = config['Directories']['estimate_output_dir']
 
 def read_sql_file(filepath):
     with open(filepath, 'r') as file:

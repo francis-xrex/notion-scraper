@@ -9,10 +9,41 @@ import os
 from datetime import datetime
 import argparse
 from dotenv import load_dotenv
+import configparser
+import shutil
 
 # Load environment variables from script directory
 script_dir = os.path.dirname(os.path.abspath(__file__))
-env_path = os.path.join(script_dir, 'credentials.properties')
+parent_dir = os.path.dirname(script_dir)  # Get the parent directory (count_result)
+env_path = os.path.join(parent_dir, 'properties', 'credentials.properties')
+config_path = os.path.join(parent_dir, 'properties', 'config.properties')
+
+def cleanup_directories():
+    """Clean up all files in the specified directories"""
+    directories = [
+        config.get('Directories', 'count_output_dir'),
+        config.get('Directories', 'delete_output_dir'),
+        config.get('Directories', 'estimate_output_dir')
+    ]
+    
+    for directory in directories:
+        if os.path.exists(directory):
+            print(f"Cleaning up directory: {directory}")
+            for filename in os.listdir(directory):
+                file_path = os.path.join(directory, filename)
+                try:
+                    if os.path.isfile(file_path):
+                        os.unlink(file_path)
+                except Exception as e:
+                    print(f"Error deleting {file_path}: {e}")
+        else:
+            print(f"Directory does not exist: {directory}")
+
+# Load configurations
+config = configparser.ConfigParser()
+config.read(config_path)
+
+# Load environment variables
 load_dotenv(env_path)
 
 class NotionScraper:
@@ -25,6 +56,11 @@ class NotionScraper:
         options.add_argument('user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
         self.driver = webdriver.Chrome(options=options)
         self.wait = WebDriverWait(self.driver, 20)
+        # Load output directories from config
+        self.count_output_dir = config.get('DEFAULT', 'count_output_dir', fallback='/Users/francischen/workspace/test/count_result/count')
+        self.delete_output_dir = config.get('DEFAULT', 'delete_output_dir', fallback='/Users/francischen/workspace/test/count_result/delete')
+        print(f"Using count output directory: {self.count_output_dir}")
+        print(f"Using delete output directory: {self.delete_output_dir}")
 
     def login_with_google(self, email, password):
         """Login to Notion using Google"""
@@ -182,38 +218,34 @@ class NotionScraper:
             # Generate timestamp for filenames
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             
-            # Set output directories
-            count_output_dir = "/Users/francischen/workspace/test/count_result/count"
-            delete_output_dir = "/Users/francischen/workspace/test/count_result/delete"
-            
             # Create output directories if they don't exist
-            os.makedirs(count_output_dir, exist_ok=True)
-            os.makedirs(delete_output_dir, exist_ok=True)
+            os.makedirs(self.count_output_dir, exist_ok=True)
+            os.makedirs(self.delete_output_dir, exist_ok=True)
             
             # Save TW content
             if tw_content:
-                tw_filename = os.path.join(count_output_dir, f"{page_name}_count_tw_{timestamp}.sql")
+                tw_filename = os.path.join(self.count_output_dir, f"{page_name}_count_tw_{timestamp}.sql")
                 with open(tw_filename, 'w', encoding='utf-8') as f:
                     f.write(tw_content)
                 print(f"\nTW content saved to: {tw_filename}")
             
             # Save KY content
             if ky_content:
-                ky_filename = os.path.join(count_output_dir, f"{page_name}_count_ky_{timestamp}.sql")
+                ky_filename = os.path.join(self.count_output_dir, f"{page_name}_count_ky_{timestamp}.sql")
                 with open(ky_filename, 'w', encoding='utf-8') as f:
                     f.write(ky_content)
                 print(f"\nKY content saved to: {ky_filename}")
 
             # Save clean TW content
             if clean_tw_content:
-                clean_tw_filename = os.path.join(delete_output_dir, f"{page_name}_clean_tw_{timestamp}.sql")
+                clean_tw_filename = os.path.join(self.delete_output_dir, f"{page_name}_clean_tw_{timestamp}.sql")
                 with open(clean_tw_filename, 'w', encoding='utf-8') as f:
                     f.write(clean_tw_content)
                 print(f"\nClean TW content saved to: {clean_tw_filename}")
             
             # Save clean KY content
             if clean_ky_content:
-                clean_ky_filename = os.path.join(delete_output_dir, f"{page_name}_clean_ky_{timestamp}.sql")
+                clean_ky_filename = os.path.join(self.delete_output_dir, f"{page_name}_clean_ky_{timestamp}.sql")
                 with open(clean_ky_filename, 'w', encoding='utf-8') as f:
                     f.write(clean_ky_content)
                 print(f"\nClean KY content saved to: {clean_ky_filename}")
@@ -225,9 +257,13 @@ class NotionScraper:
             return False
 
 def main():
+    # Clean up directories at the start
+    cleanup_directories()
+    
     # Set up argument parser
     parser = argparse.ArgumentParser(description='Scrape content from Notion pages')
-    parser.add_argument('--links-file', '-f', default=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'notion_links.txt'), help='File containing Notion page URLs')
+    parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # Get the parent directory (count_result)
+    parser.add_argument('--links-file', '-f', default=os.path.join(parent_dir, 'properties', 'notion_links.txt'), help='File containing Notion page URLs')
     args = parser.parse_args()
 
     # Get credentials from environment variables
