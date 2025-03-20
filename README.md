@@ -1,8 +1,9 @@
 # Script Execution Guide
 
-The script `/script/run_count.py` will execute the following steps:
+## `run_count.py`
+   - This will execute both `scraper_stable.py` and `estimate_count.py`
 
-## 1. `scraper_stable.py`
+## `scraper_stable.py`
    - Scrapes links from `notion_links.txt`.
    - Extracts SQL statements between the following markers:
      - `#count_tw_start` & `#count_tw_end`
@@ -11,10 +12,10 @@ The script `/script/run_count.py` will execute the following steps:
      - `#clean_ky_start` & `#clean_ky_end`
    - Saves the extracted SQL files under the `/count` and `/delete` folders.
 
-## 2. `estimate_count.py`
+## `estimate_count.py`
    - Generates CSV files that estimate SQL execution time for the SQL files in the `/count` folder.
 
-## 3. `execute_sql.py`
+## `execute_sql.py`
    - This will execute all the SQL files under `/delete` folder.
    
 ## Flow Chart
