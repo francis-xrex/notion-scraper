@@ -14,6 +14,9 @@ The script `/script/run_count.py` will execute the following steps:
 ## 2. `estimate_count.py`
    - Generates CSV files that estimate SQL execution time for the SQL files in the `/count` folder.
 
+## 3. `execute_sql.py`
+   - This will execute all the SQL files under `/delete` folder.
+   
 ## Flow Chart
 ```mermaid
 graph TD
