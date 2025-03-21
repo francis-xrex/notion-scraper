@@ -21,9 +21,10 @@ config_path = os.path.join(parent_dir, 'properties', 'config.properties')
 def cleanup_directories():
     """Clean up all files in the specified directories"""
     directories = [
-        config.get('Directories', 'count_output_dir'),
-        config.get('Directories', 'delete_output_dir'),
-        config.get('Directories', 'estimate_output_dir')
+        config.get('Directories', 'count_tw_dir'),
+        config.get('Directories', 'count_ky_dir'),
+        config.get('Directories', 'delete_tw_dir'),
+        config.get('Directories', 'delete_ky_dir')
     ]
     
     for directory in directories:
@@ -57,10 +58,14 @@ class NotionScraper:
         self.driver = webdriver.Chrome(options=options)
         self.wait = WebDriverWait(self.driver, 20)
         # Load output directories from config
-        self.count_output_dir = config.get('DEFAULT', 'count_output_dir', fallback='/Users/francischen/workspace/test/count_result/count')
-        self.delete_output_dir = config.get('DEFAULT', 'delete_output_dir', fallback='/Users/francischen/workspace/test/count_result/delete')
-        print(f"Using count output directory: {self.count_output_dir}")
-        print(f"Using delete output directory: {self.delete_output_dir}")
+        self.count_tw_dir = config.get('Directories', 'count_tw_dir')
+        self.count_ky_dir = config.get('Directories', 'count_ky_dir')
+        self.delete_tw_dir = config.get('Directories', 'delete_tw_dir')
+        self.delete_ky_dir = config.get('Directories', 'delete_ky_dir')
+        print(f"Using count TW directory: {self.count_tw_dir}")
+        print(f"Using count KY directory: {self.count_ky_dir}")
+        print(f"Using delete TW directory: {self.delete_tw_dir}")
+        print(f"Using delete KY directory: {self.delete_ky_dir}")
 
     def login_with_google(self, email, password):
         """Login to Notion using Google"""
@@ -219,33 +224,35 @@ class NotionScraper:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             
             # Create output directories if they don't exist
-            os.makedirs(self.count_output_dir, exist_ok=True)
-            os.makedirs(self.delete_output_dir, exist_ok=True)
+            os.makedirs(self.count_tw_dir, exist_ok=True)
+            os.makedirs(self.count_ky_dir, exist_ok=True)
+            os.makedirs(self.delete_tw_dir, exist_ok=True)
+            os.makedirs(self.delete_ky_dir, exist_ok=True)
             
             # Save TW content
             if tw_content:
-                tw_filename = os.path.join(self.count_output_dir, f"{page_name}_count_tw_{timestamp}.sql")
+                tw_filename = os.path.join(self.count_tw_dir, f"{page_name}_count_tw_{timestamp}.sql")
                 with open(tw_filename, 'w', encoding='utf-8') as f:
                     f.write(tw_content)
                 print(f"\nTW content saved to: {tw_filename}")
             
             # Save KY content
             if ky_content:
-                ky_filename = os.path.join(self.count_output_dir, f"{page_name}_count_ky_{timestamp}.sql")
+                ky_filename = os.path.join(self.count_ky_dir, f"{page_name}_count_ky_{timestamp}.sql")
                 with open(ky_filename, 'w', encoding='utf-8') as f:
                     f.write(ky_content)
                 print(f"\nKY content saved to: {ky_filename}")
 
             # Save clean TW content
             if clean_tw_content:
-                clean_tw_filename = os.path.join(self.delete_output_dir, f"{page_name}_clean_tw_{timestamp}.sql")
+                clean_tw_filename = os.path.join(self.delete_tw_dir, f"{page_name}_clean_tw_{timestamp}.sql")
                 with open(clean_tw_filename, 'w', encoding='utf-8') as f:
                     f.write(clean_tw_content)
                 print(f"\nClean TW content saved to: {clean_tw_filename}")
             
             # Save clean KY content
             if clean_ky_content:
-                clean_ky_filename = os.path.join(self.delete_output_dir, f"{page_name}_clean_ky_{timestamp}.sql")
+                clean_ky_filename = os.path.join(self.delete_ky_dir, f"{page_name}_clean_ky_{timestamp}.sql")
                 with open(clean_ky_filename, 'w', encoding='utf-8') as f:
                     f.write(clean_ky_content)
                 print(f"\nClean KY content saved to: {clean_ky_filename}")
