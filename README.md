@@ -17,6 +17,21 @@
 
 This repository contains scripts for scraping SQL queries from Notion and executing them to estimate and clean up data.
 
+## Quick Start
+1. Clone this repo to path: `/Applications`
+2. Adjust the DB connection
+   ```
+   host={host}
+   port={port}
+   user={user_name}
+   password={password}
+   ```
+3. Adjust the credentials
+   ```
+   GOOGLE_EMAIL={email}
+   GOOGLE_PASSWORD={password}
+   ```
+
 ## Scripts Overview
 
 ## `generate.py`
