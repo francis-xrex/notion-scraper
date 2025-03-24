@@ -1,3 +1,15 @@
+# For SRE 
+## 3/27
+  1. Execute `generate.py` to generate
+     - `.sql files` that contain DELETE SQLs
+     - CSV reports of estimated time
+  2. SRE pass `.sql files` and `CSV files` to BE. 
+  3. BE will break down and provide new `DELETE SQL` files for SRE.
+
+## 5/6 Release
+  1. Execute `execute_sql.py` to execute all `DELETE SQL` files that provide by BE.
+
+---
 # Script Execution Guide
 
 This repository contains scripts for scraping SQL queries from Notion and executing them to estimate and clean up data.
