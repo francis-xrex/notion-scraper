@@ -80,7 +80,7 @@ count_result/
 
 
 ## Flow Chart
-### run_count.py
+### generate.py
 ```mermaid
 flowchart TD
     A[Start] --> B[Clean up directories]
@@ -101,7 +101,8 @@ flowchart TD
     Z --> V{Has next URLs?}
     
     V --> |Yes|O
-    V --> |No|G[Done]
+    V --> |No|FF[Generate csv reports of estimated execution time]
+    FF --> G[Done]
 ```
 
 ### execute.py
