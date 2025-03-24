@@ -7,7 +7,7 @@ import configparser
 from datetime import datetime
 
 def read_credentials():
-    """Read database credentials from config.properties file"""
+    """Read database credentials and directory paths from config.properties file"""
     credentials = {}
     try:
         config = configparser.ConfigParser()
@@ -20,6 +20,10 @@ def read_credentials():
         credentials['user'] = config.get('MySQL', 'user')
         credentials['password'] = config.get('MySQL', 'password')
         credentials['database'] = config.get('MySQL', 'database')
+        
+        # Read Directories section
+        credentials['delete_ky_dir'] = config.get('Directories', 'delete_ky_dir')
+        credentials['delete_tw_dir'] = config.get('Directories', 'delete_tw_dir')
         
     except Exception as e:
         print(f"Error reading config.properties: {e}")
@@ -42,13 +46,20 @@ def log_error(sql_file, error_message):
 def execute_sql_file(cursor, sql_file):
     """Execute a SQL file"""
     try:
+        # Add confirmation prompt
+        sql_filename = os.path.basename(sql_file)
+        confirmation = input(f"Do you want to execute {sql_filename}? (yes/no): ").lower()
+        if confirmation != 'yes':
+            print(f"Skipping {sql_filename}")
+            return True
+
         with open(sql_file, 'r') as f:
             sql_commands = f.read()
             
         # Split the SQL commands by semicolon
         for command in sql_commands.split(';'):
             if command.strip():
-                print(f"Executing SQL from {os.path.basename(sql_file)}...")
+                print(f"Executing SQL from {sql_filename}...")
                 cursor.execute(command)
                 
                 # Fetch results if it's a SELECT query
@@ -56,7 +67,7 @@ def execute_sql_file(cursor, sql_file):
                     results = cursor.fetchall()
                     print(f"Query results: {results}")
                 
-                print(f"Successfully executed SQL from {os.path.basename(sql_file)}")
+                print(f"Successfully executed SQL from {sql_filename}")
                 
     except Error as e:
         error_message = f"Error executing SQL file {sql_file}: {e}"
@@ -66,12 +77,10 @@ def execute_sql_file(cursor, sql_file):
     return True
 
 def main():
-    # Get the script's directory
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    delete_dir = os.path.join(os.path.dirname(script_dir), "delete")
-    
-    # Read database credentials
+    # Read database credentials and directory paths
     credentials = read_credentials()
+    delete_ky_dir = credentials['delete_ky_dir']
+    delete_tw_dir = credentials['delete_tw_dir']
     
     try:
         # Establish database connection
@@ -86,18 +95,27 @@ def main():
         if connection.is_connected():
             cursor = connection.cursor()
             
-            # Get all SQL files from the delete directory
-            sql_files = glob.glob(os.path.join(delete_dir, "*.sql"))
+            # Process delete_ky directory first
+            print("\nProcessing delete_ky directory...")
+            sql_files_ky = glob.glob(os.path.join(delete_ky_dir, "*.sql"))
+            if not sql_files_ky:
+                print(f"No SQL files found in {delete_ky_dir}")
+            else:
+                for sql_file in sql_files_ky:
+                    if not execute_sql_file(cursor, sql_file):
+                        print(f"Failed to execute {sql_file}")
+                        continue
             
-            if not sql_files:
-                print(f"No SQL files found in {delete_dir}")
-                return
-            
-            # Execute each SQL file
-            for sql_file in sql_files:
-                if not execute_sql_file(cursor, sql_file):
-                    print(f"Failed to execute {sql_file}")
-                    continue
+            # Process delete_tw directory
+            print("\nProcessing delete_tw directory...")
+            sql_files_tw = glob.glob(os.path.join(delete_tw_dir, "*.sql"))
+            if not sql_files_tw:
+                print(f"No SQL files found in {delete_tw_dir}")
+            else:
+                for sql_file in sql_files_tw:
+                    if not execute_sql_file(cursor, sql_file):
+                        print(f"Failed to execute {sql_file}")
+                        continue
                 
             # Commit all changes
             connection.commit()
