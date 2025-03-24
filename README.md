@@ -2,12 +2,12 @@
 ## 3/27
   1. Execute `generate.py` to generate
      - `.sql files` that contain delete SQLs
-     - `CSV reports` of SQL estimated execution time
-  2. SRE pass `.sql files` and `CSV reports` to BE. 
-  3. BE will break down and provide new `DELETE SQL` files for SRE.
+     - `csv reports` of SQL estimated execution time
+  2. SRE pass `.sql files` and `csv reports` to BE. 
+  3. BE will break down and provide new delete `.sql files` for SRE.
 
 ## 5/6 Release
-  1. Execute `execute_sql.py` to execute all `DELETE SQL` files that provide by BE.
+  1. Run `execute_sql.py` to execute all delete `.SQL files` that provide by BE.
 
 <br>
 <br>
