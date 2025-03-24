@@ -1,5 +1,5 @@
 # Timeline
-## 3/27
+## 3/25
   1. Execute `generate.py` to generate
      - `.sql files` that contain delete SQLs
      - `csv reports` of SQL estimated execution time
