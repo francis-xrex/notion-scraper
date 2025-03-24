@@ -4,6 +4,7 @@ import mysql.connector
 from mysql.connector import Error
 import glob
 import configparser
+from datetime import datetime
 
 def read_credentials():
     """Read database credentials from config.properties file"""
@@ -25,6 +26,19 @@ def read_credentials():
         sys.exit(1)
     return credentials
 
+def log_error(sql_file, error_message):
+    """Log error to a file named after the SQL file"""
+    log_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "logs")
+    os.makedirs(log_dir, exist_ok=True)
+    
+    sql_filename = os.path.basename(sql_file)
+    log_filename = f"{os.path.splitext(sql_filename)[0]}_error.log"
+    log_path = os.path.join(log_dir, log_filename)
+    
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open(log_path, 'a') as f:
+        f.write(f"[{timestamp}] Error executing {sql_filename}:\n{error_message}\n\n")
+
 def execute_sql_file(cursor, sql_file):
     """Execute a SQL file"""
     try:
@@ -45,7 +59,9 @@ def execute_sql_file(cursor, sql_file):
                 print(f"Successfully executed SQL from {os.path.basename(sql_file)}")
                 
     except Error as e:
-        print(f"Error executing SQL file {sql_file}: {e}")
+        error_message = f"Error executing SQL file {sql_file}: {e}"
+        print(error_message)
+        log_error(sql_file, error_message)
         return False
     return True
 
