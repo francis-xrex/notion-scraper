@@ -4,6 +4,9 @@ This repository contains scripts for scraping SQL queries from Notion and execut
 
 ## Scripts Overview
 
+## `generate.py`
+- This will run `scraper_stable.py` and  `estimate_count.py`
+
 ## `scraper_stable.py`
 - Scrapes SQL queries from Notion pages listed in `notion_links.txt`
 - Extracts SQL statements between markers:
