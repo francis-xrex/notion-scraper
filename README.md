@@ -19,14 +19,14 @@ This repository contains scripts for scraping SQL queries from Notion and execut
 
 ## Quick Start
 1. Clone this repo to path: `/Applications`
-2. Adjust the DB connection
+2. Adjust the DB connection (/config.properties)
    ```
    host={host}
    port={port}
    user={user_name}
    password={password}
    ```
-3. Adjust the credentials
+3. Adjust the credentials (/credentials.properties)
    ```
    GOOGLE_EMAIL={email}
    GOOGLE_PASSWORD={password}
