@@ -17,7 +17,7 @@
   4. [Run Global Script](https://www.notion.so/xrexuiux/Services-19941348cec580868b98c0c72030b9dc?pvs=4#1af41348cec5800b937fe00151b10f74)
 
 # note:
-1. threat_engine is in the data warehouse, not in operation DB. the scripts may failed.
+1. threat_engine is in the data warehouse, not in the operation DB. Hence, the scripts may fail. We may execute separately.
 
 <br>
 <br>
