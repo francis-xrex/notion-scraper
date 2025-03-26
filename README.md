@@ -6,8 +6,18 @@
   2. SRE pass `.sql files` and `csv reports` to BE. 
   3. BE will break down and provide new delete `.sql files` for SRE.
 
-## 5/6 Release
-  1. Run `execute_sql.py` to execute all delete `.SQL files` that provide by BE.
+## QA testing & 5/6 Release
+  1. Run pre-cleanup script <br/>
+    - [KY cleanup script](https://www.notion.so/xrexuiux/Services-19941348cec580868b98c0c72030b9dc?pvs=4#1ba41348cec58052bcfcdb13be27e92c) <br/>
+    - [TW cleanup script](https://www.notion.so/xrexuiux/Services-19941348cec580868b98c0c72030b9dc?pvs=4#19d41348cec5802d9ad2ed4ccd34b1ae)
+  2. Run `execute_sql.py` to execute all delete `.SQL files` that provide by BE.
+  3. Run post-cleanup script <br/>
+    - [KY cleanup script](https://www.notion.so/xrexuiux/Services-19941348cec580868b98c0c72030b9dc?pvs=4#1c041348cec580f284d1dc6152f1664c) <br/>
+    - [TW cleanup script](https://www.notion.so/xrexuiux/Services-19941348cec580868b98c0c72030b9dc?pvs=4#1b241348cec580eda440e228ed5cf586)
+  4. [Run Global Script](https://www.notion.so/xrexuiux/Services-19941348cec580868b98c0c72030b9dc?pvs=4#1af41348cec5800b937fe00151b10f74)
+
+# note:
+1. threat_engine is in the data warehouse, not in operation DB. the scripts may failed.
 
 <br>
 <br>
