@@ -32,21 +32,25 @@ def delete_keys_with_prefix(host, port, password, prefix):
     )
     
     try:
-        # Get all keys matching the prefix
-        keys = rc.keys(f"{prefix}*")
+        # Use scan_iter to find keys matching the prefix
+        keys_to_delete = []
         
-        if not keys:
+        # Get all keys matching the prefix
+        for key in rc.scan_iter(match=f"{prefix}*", count=100):
+            keys_to_delete.append(key)
+        
+        if not keys_to_delete:
             print(f"No keys found with prefix '{prefix}'")
             return
         
-        print(f"Found {len(keys)} keys with prefix '{prefix}':")
+        print(f"Found {len(keys_to_delete)} keys with prefix '{prefix}':")
         
         # Print and delete keys in a single loop
-        for key in keys:
+        for key in keys_to_delete:
             print(f"- {key}")
             rc.delete(key)
         
-        print(f"\nSuccessfully deleted {len(keys)} keys with prefix '{prefix}'")
+        print(f"\nSuccessfully deleted {len(keys_to_delete)} keys with prefix '{prefix}'")
         
     except Exception as e:
         print(f"Error occurred: {str(e)}")
