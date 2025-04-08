@@ -53,6 +53,9 @@ def execute_sql_file(cursor, sql_file):
             print(f"Skipping {sql_filename}")
             return True
 
+        # Disable safe updates mode
+        cursor.execute("SET SQL_SAFE_UPDATES = 0;")
+
         with open(sql_file, 'r') as f:
             sql_commands = f.read()
             
